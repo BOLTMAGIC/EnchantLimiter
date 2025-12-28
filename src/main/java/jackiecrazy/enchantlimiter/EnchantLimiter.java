@@ -19,7 +19,7 @@ public class EnchantLimiter {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public EnchantLimiter() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, LimiterConfig.CONFIG_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, LimiterConfig.CONFIG_SPEC);
     }
 
     public static double getTotalEnchantPoints(ItemStack stack) {

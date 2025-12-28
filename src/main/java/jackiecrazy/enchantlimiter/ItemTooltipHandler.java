@@ -24,7 +24,7 @@ import java.util.Map;
 public class ItemTooltipHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)//by marking it high, this will appear AFTER ench desc
     public static void tooltip(ItemTooltipEvent e) {
-        if (e.getItemStack().isEnchanted() || e.getItemStack().isEnchantable() || e.getItemStack().getItem() instanceof EnchantedBookItem) {
+        if (e.getItemStack().isEnchanted() || e.getItemStack().getItem() instanceof EnchantedBookItem) {
             final double used = EnchantLimiter.getUsedEnchantPoints(e.getItemStack());
             final double total = EnchantLimiter.getTotalEnchantPoints(e.getItemStack());
             e.getToolTip().add(Component.translatable("enchantlimiter.points", (used > total ? ChatFormatting.RED : "") + "" + used + "" + ChatFormatting.RESET + "/" + total));
