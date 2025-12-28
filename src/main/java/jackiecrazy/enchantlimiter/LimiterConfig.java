@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ public class LimiterConfig {
     public static final ForgeConfigSpec CONFIG_SPEC;
     public static HashMap<Enchantment, EnchantInfo> map = new HashMap<>();
     public static HashMap<Item, EnchantInfo> customItems = new HashMap<>();
+    public static List<Enchantment> blacklistedEnchantments = new ArrayList<>();
     public static EnchantInfo DEFAULT = new EnchantInfo(0, 1);
     public static double pointsPerEnchantability, grain;
     public static double basePoint;
@@ -39,6 +41,7 @@ public class LimiterConfig {
     private final ForgeConfigSpec.DoubleValue basePoints, baseCost, incrementalCost;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _customItems;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _enchantDefinition;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> _blacklistedEnchantments;
 
     public LimiterConfig(ForgeConfigSpec.Builder b) {
         b.push("enchantability");
@@ -49,6 +52,7 @@ public class LimiterConfig {
         incrementalCost = b.comment("the default cost to add one level to any existing enchantment on the item. An enchantment with level 1 will apply both the base cost and the incremental cost, once each.").defineInRange("incremental cost", 1, 0, Double.MAX_VALUE);
         _customItems = b.comment("Items that have their own enchantment point cap. Format is name, base enchantability, increment per extra point of enchantability.").defineList("custom items", Arrays.asList("minecraft:fishing_rod, 20, 0.5", "minecraft:bow, 15, 1", "minecraft:enchanted_book, 30, 0"), String.class::isInstance);
         _enchantDefinition = b.comment("It's really irritating how nightconfig doesn't keep the entries in separate lines, but alas. Define enchantments here. Format is name, base cost, incremental cost.").defineList("enchantments", Arrays.asList("minecraft:mending, 5, 0", "minecraft:sharpness, 0, 1"), String.class::isInstance);
+        _blacklistedEnchantments = b.comment("Enchantments that should be blacklisted. Format is name. Examples: [\"minecraft:mending\", \"minecraft:sharpness\"]").defineList("blacklisted enchantments", Arrays.asList(), String.class::isInstance);
         b.pop();
 //        b.push("total enchantment cost is calculated as cost to apply+(additional cost per level*level), so for an enchantment that only has 1 level (eg mending) you can leave either of the two as 0");
 //        b.pop();
@@ -80,6 +84,7 @@ public class LimiterConfig {
             try {
                 map.clear();
                 customItems.clear();
+                blacklistedEnchantments.clear();
                 pointsPerEnchantability = CONFIG.ppe.get();
                 basePoint = CONFIG.basePoints.get();
                 grain = CONFIG.granularity.get();
@@ -108,6 +113,12 @@ public class LimiterConfig {
                 for (String s : CONFIG._customItems.get()) {
                     String[] split = s.split(",");
                     customItems.put(ForgeRegistries.ITEMS.getValue(new ResourceLocation(split[0].trim())), new EnchantInfo(Integer.parseInt(split[1].trim()), Double.parseDouble(split[2].trim())));
+                }
+                for (String s : CONFIG._blacklistedEnchantments.get()) {
+                    Enchantment ench = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(s.trim()));
+                    if (ench != null) {
+                        blacklistedEnchantments.add(ench);
+                    }
                 }
                 EnchantLimiter.LOGGER.debug("enchantment limits loaded!");
             } catch (Exception validationException) {

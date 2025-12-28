@@ -34,20 +34,17 @@ public class EnchantLimiter {
     }
 
     public static double getUsedEnchantPoints(ItemStack stack) {
-        int ret = 0;
+        double ret = 0;
         for (Map.Entry<Enchantment, Integer> e : EnchantmentHelper.getEnchantments(stack).entrySet()) {
             ret += getRequiredEnchantPoints(e.getKey(), e.getValue());
         }
-        if (Math.abs(ret - Math.round(ret)) < LimiterConfig.grain)
-            ret = Math.round(ret);
-        return ret;
+        return ret; // Rundung entfernt, um Dezimalstellen zu erhalten
     }
 
     public static double getRequiredEnchantPoints(Enchantment e, int i) {
         LimiterConfig.EnchantInfo ei=LimiterConfig.map.getOrDefault(e, LimiterConfig.DEFAULT);
         double ret = ei.getBase() + (ei.getIncrement() * i);
-        if (Math.abs(ret - Math.round(ret)) < LimiterConfig.grain)
-            ret = Math.round(ret);
+        // Rundung entfernt, um Dezimalstellen zu erhalten
         return ret;
     }
 }
