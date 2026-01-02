@@ -7,14 +7,17 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,9 +53,10 @@ public class LimiterConfig {
         basePoints = b.comment("how many enchantment points an item starts with").defineInRange("base points", 10, 0d, Double.MAX_VALUE);
         baseCost = b.comment("the default cost to add a new enchantment onto an item.").defineInRange("base cost", 0, 0d, Double.MAX_VALUE);
         incrementalCost = b.comment("the default cost to add one level to any existing enchantment on the item. An enchantment with level 1 will apply both the base cost and the incremental cost, once each.").defineInRange("incremental cost", 1, 0, Double.MAX_VALUE);
-        _customItems = b.comment("Items that have their own enchantment point cap. Format is name, base enchantability, increment per extra point of enchantability.").defineList("custom items", Arrays.asList("minecraft:fishing_rod, 20, 0.5", "minecraft:bow, 15, 1", "minecraft:enchanted_book, 30, 0"), String.class::isInstance);
+        // Keep the default list for custom items empty so user changes are not overwritten
+        _customItems = b.comment("Items that have their own enchantment point cap. Format is name, base enchantability, increment per extra point of enchantability.").defineList("custom items", Collections.emptyList(), String.class::isInstance);
         _enchantDefinition = b.comment("It's really irritating how nightconfig doesn't keep the entries in separate lines, but alas. Define enchantments here. Format is name, base cost, incremental cost.").defineList("enchantments", Arrays.asList("minecraft:mending, 5, 0", "minecraft:sharpness, 0, 1"), String.class::isInstance);
-        _blacklistedEnchantments = b.comment("Enchantments that should be blacklisted. Format is name. Examples: [\"minecraft:mending\", \"minecraft:sharpness\"]").defineList("blacklisted enchantments", Arrays.asList(), String.class::isInstance);
+        _blacklistedEnchantments = b.comment("Enchantments that should be blacklisted. Format is name. Examples: [\"minecraft:mending\", \"minecraft:sharpness\"]").defineList("blacklisted enchantments", Collections.emptyList(), String.class::isInstance);
         b.pop();
 //        b.push("total enchantment cost is calculated as cost to apply+(additional cost per level*level), so for an enchantment that only has 1 level (eg mending) you can leave either of the two as 0");
 //        b.pop();
@@ -82,6 +86,17 @@ public class LimiterConfig {
     public static void loadConfig(ModConfigEvent e) {
         if (e.getConfig().getSpec() == CONFIG_SPEC) {
             try {
+                // Create the config file only if it does not exist. This prevents overwriting existing files.
+                Path configFile = FMLPaths.CONFIGDIR.get().resolve(EnchantLimiter.MODID + "-server.toml");
+                if (!Files.exists(configFile)) {
+                    try {
+                        e.getConfig().save();
+                        EnchantLimiter.LOGGER.debug("enchantlimiter: default config created at " + configFile.toString());
+                    } catch (Exception saveEx) {
+                        EnchantLimiter.LOGGER.warn("Failed to write default config file: " + saveEx.getMessage());
+                    }
+                }
+
                 map.clear();
                 customItems.clear();
                 blacklistedEnchantments.clear();
