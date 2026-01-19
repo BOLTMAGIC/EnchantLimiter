@@ -1,5 +1,17 @@
 {
+  "item.enchantlimiter.common_crystal": "一般の結晶",
+  "item.enchantlimiter.uncommon_crystal": "やや珍しい結晶",
+  "item.enchantlimiter.rare_crystal": "希少な結晶",
+  "item.enchantlimiter.legendary_crystal": "伝説の結晶",
   "enchantlimiter.points": "エンチャントポイント: %s",
-  "enchantlimiter.tip": "消費ポイント: %1$s + %2$s × %3$s = %4$s",
-  "enchantlimiter.shift": "シフト長押しで個々エンチャントのポイント消費を表示..."
+  "enchantlimiter.tip": "消費ポイント: base %s + incr %s × レベル %s = %s",
+  "enchantlimiter.shift": "SHIFTを押し続けて詳細を表示",
+  "enchantlimiter.cannot_apply_smaller": "結晶を適用できません：既に同等またはそれ以上の結晶が装着されています",
+  "item.enchantlimiter.tooltip.common": "付与可能ポイントを +1 増やします。",
+  "item.enchantlimiter.tooltip.uncommon": "付与可能ポイントを +3 増やします。",
+  "item.enchantlimiter.tooltip.rare": "付与可能ポイントを +5 増やします。",
+  "item.enchantlimiter.tooltip.legendary": "付与可能ポイントを +10 増やします。",
+  "itemGroup.enchantlimiter": "Enchant Limiter",
+  "enchantlimiter.cannot_apply_blacklist": "結晶を適用できません：このアイテムはブラックリストに登録されています",
+  "enchantlimiter.crystals_disabled": "設定で結晶が無効化されています"
 }

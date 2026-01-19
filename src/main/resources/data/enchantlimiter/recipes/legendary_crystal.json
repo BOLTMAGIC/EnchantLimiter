@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NIN",
+    "IRI",
+    "NNN"
+  ],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "I": { "item": "enchantlimiter:rare_crystal" },
+    "R": { "item": "minecraft:nether_star" }
+  },
+  "result": {
+    "item": "enchantlimiter:legendary_crystal",
+    "count": 1
+  }
+}

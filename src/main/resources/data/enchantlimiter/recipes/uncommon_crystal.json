@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "CCC",
+    "IEI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:gold_ingot" },
+    "C": { "item": "enchantlimiter:common_crystal" },
+    "E": { "item": "minecraft:emerald" }
+  },
+  "result": {
+    "item": "enchantlimiter:uncommon_crystal",
+    "count": 1
+  }
+}

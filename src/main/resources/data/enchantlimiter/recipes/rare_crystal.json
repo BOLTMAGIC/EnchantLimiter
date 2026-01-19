@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "UUU",
+    "DED"
+  ],
+  "key": {
+    "D": { "item": "minecraft:diamond" },
+    "U": { "item": "enchantlimiter:uncommon_crystal" },
+    "E": { "item": "minecraft:emerald" }
+  },
+  "result": {
+    "item": "enchantlimiter:rare_crystal",
+    "count": 1
+  }
+}

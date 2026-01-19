@@ -15,21 +15,32 @@ import java.util.Map;
 @Mod(EnchantLimiter.MODID)
 public class EnchantLimiter {
     public static final String MODID = "enchantlimiter";
-    public static final String VERSION = "1.0.0";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public EnchantLimiter() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, LimiterConfig.CONFIG_SPEC);
+        // Register items and other registries
+        ItemInit.register();
+        ModCreativeTabs.register();
     }
 
+    // Compute total enchant points for display/limits.
+    // Design notes:
+    // - If an item has an NBT tag "extraEnchantPoints", it overrides/adds to the base calculation
+    //   and represents points granted by a crystal. The tooltip code uses this to always display
+    //   the crystal-sourced value. This field is not cumulative across multiple crystals; the
+    //   Anvil handler will ensure only the highest crystal value is stored here.
     public static double getTotalEnchantPoints(ItemStack stack) {
         double ret=(stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
+        ret=(stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
         if (LimiterConfig.customItems.containsKey(stack.getItem())) {
              ret = LimiterConfig.customItems.get(stack.getItem()).getBase();
             ret += (stack.getEnchantmentValue() * LimiterConfig.customItems.get(stack.getItem()).getIncrement());
         }
-        if(stack.hasTag())
+        if(stack.hasTag()) {
+            assert stack.getTag() != null;
             ret+=stack.getTag().getDouble("extraEnchantPoints");
+        }
         return ret;
     }
 
@@ -38,13 +49,11 @@ public class EnchantLimiter {
         for (Map.Entry<Enchantment, Integer> e : EnchantmentHelper.getEnchantments(stack).entrySet()) {
             ret += getRequiredEnchantPoints(e.getKey(), e.getValue());
         }
-        return ret; // Rundung entfernt, um Dezimalstellen zu erhalten
+        return ret;
     }
 
     public static double getRequiredEnchantPoints(Enchantment e, int i) {
         LimiterConfig.EnchantInfo ei=LimiterConfig.map.getOrDefault(e, LimiterConfig.DEFAULT);
-        double ret = ei.getBase() + (ei.getIncrement() * i);
-        // Rundung entfernt, um Dezimalstellen zu erhalten
-        return ret;
+        return ei.getBase() + (ei.getIncrement() * i);
     }
 }
