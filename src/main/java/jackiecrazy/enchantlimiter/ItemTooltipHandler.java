@@ -22,18 +22,77 @@ import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = EnchantLimiter.MODID, value = Dist.CLIENT)
 public class ItemTooltipHandler {
+    // Adds enchantment point information to item tooltips when appropriate.
+    // Design notes:
+    // - Only certain item types should show the enchantment points: swords, all tools (TieredItem),
+    //   armor, shields, bows, crossbows, and tridents. This avoids showing the tooltip on random items.
+    // - If an item has extraEnchantPoints in NBT (from a crystal), that value is shown.
+    // - If an item is blacklisted for crystals, a blacklist message is shown instead.
     @SubscribeEvent(priority = EventPriority.HIGH)//by marking it high, this will appear AFTER ench desc
     public static void tooltip(ItemTooltipEvent e) {
-        if (e.getItemStack().isEnchanted() || e.getItemStack().getItem() instanceof EnchantedBookItem) {
-            final double used = EnchantLimiter.getUsedEnchantPoints(e.getItemStack());
-            final double total = EnchantLimiter.getTotalEnchantPoints(e.getItemStack());
-            e.getToolTip().add(Component.translatable("enchantlimiter.points", (used > total ? ChatFormatting.RED : "") + "" + used + "" + ChatFormatting.RESET + "/" + total));
+        ItemStack stack = e.getItemStack();
+
+        String rejectKey = null;
+        if (stack.hasTag()) {
+            net.minecraft.nbt.CompoundTag t = stack.getTag();
+            if (t != null && t.contains("el_crystal_reject")) {
+                rejectKey = t.getString("el_crystal_reject");
+            }
         }
-        if (e.getItemStack().getItem() instanceof EnchantedBookItem) {
+
+        boolean hasExtraTag = false;
+        if (stack.hasTag()) {
+            net.minecraft.nbt.CompoundTag t = stack.getTag();
+            hasExtraTag = (t != null && t.contains("extraEnchantPoints"));
+        }
+
+        boolean isEnchanted = stack.isEnchanted() || stack.getItem() instanceof EnchantedBookItem;
+        // Show only for swords, tiered tools (pick/axe/shovel/hoe/etc.), armor, shields, bows, crossbows, tridents or items with the crystal tag or already enchanted
+        boolean isSword = stack.getItem() instanceof net.minecraft.world.item.SwordItem;
+        boolean isTieredTool = stack.getItem() instanceof net.minecraft.world.item.TieredItem;
+        boolean isArmor = stack.getItem() instanceof net.minecraft.world.item.ArmorItem;
+        boolean isShield = stack.getItem() instanceof net.minecraft.world.item.ShieldItem;
+        boolean isBow = stack.getItem() instanceof net.minecraft.world.item.BowItem;
+        boolean isCrossbow = stack.getItem() instanceof net.minecraft.world.item.CrossbowItem;
+        boolean isTrident = stack.getItem() instanceof net.minecraft.world.item.TridentItem;
+
+        boolean shouldShowPoints = hasExtraTag || isEnchanted || isSword || isTieredTool || isArmor || isShield || isBow || isCrossbow || isTrident;
+
+        // Always show enchantment points for allowed items
+        if (shouldShowPoints) {
+            double used = EnchantLimiter.getUsedEnchantPoints(stack);
+            double total = EnchantLimiter.getTotalEnchantPoints(stack);
+            MutableComponent amountComp;
+            if (isEnchanted || stack.getItem() instanceof EnchantedBookItem) {
+                amountComp = Component.literal(formatDouble(used) + "/" + formatDouble(total)).withStyle(used > total ? ChatFormatting.RED : ChatFormatting.RESET);
+            } else {
+                amountComp = Component.literal(formatDouble(total));
+            }
+            e.getToolTip().add(Component.translatable("enchantlimiter.points", amountComp));
+        }
+
+        // If there was a rejection reason, show it (but don't suppress the points)
+        if (rejectKey != null) {
+            e.getToolTip().add(Component.translatable(rejectKey).withStyle(ChatFormatting.RED));
+            // do not return; keep showing other info (points already shown above)
+        }
+
+        // If the item has extraEnchantPoints (from a crystal), don't show additional cost/shift lines
+        if (hasExtraTag) {
+            return;
+        }
+
+        // For enchanted books show the description on SHIFT, otherwise show the SHIFT hint only for books
+        if (stack.getItem() instanceof EnchantedBookItem) {
             if (Screen.hasShiftDown())
-                insertDescriptionTooltips(e.getToolTip(), e.getItemStack());
+                insertDescriptionTooltips(e.getToolTip(), stack);
             else e.getToolTip().add(Component.translatable("enchantlimiter.shift"));
         }
+    }
+
+    private static String formatDouble(double d) {
+        if (d == (long) d) return String.valueOf((long) d);
+        return String.format("%.2f", d);
     }
 
     private static void insertDescriptionTooltips(List<Component> tips, ItemStack stack) {

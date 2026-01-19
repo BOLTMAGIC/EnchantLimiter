@@ -1,5 +1,17 @@
 {
-  "enchantlimiter.points": "Enchantment Points: %s",
-  "enchantlimiter.tip": "Cost: %1$s + %2$s * %3$s = %4$s",
-  "enchantlimiter.shift": "Hold SHIFT for individual costs..."
+  "item.enchantlimiter.common_crystal": "Common Crystal",
+  "item.enchantlimiter.uncommon_crystal": "Uncommon Crystal",
+  "item.enchantlimiter.rare_crystal": "Rare Crystal",
+  "item.enchantlimiter.legendary_crystal": "Legendary Crystal",
+  "enchantlimiter.points": "Enchant Points: %s",
+  "enchantlimiter.shift": "Hold SHIFT for details",
+  "enchantlimiter.tip": "Cost: base %s + incr %s * level %s = %s",
+  "item.enchantlimiter.tooltip.common": "Increases enchantment capacity by +1 point.",
+  "item.enchantlimiter.tooltip.uncommon": "Increases enchantment capacity by +3 points.",
+  "item.enchantlimiter.tooltip.rare": "Increases enchantment capacity by +5 points.",
+  "item.enchantlimiter.tooltip.legendary": "Increases enchantment capacity by +10 points.",
+  "enchantlimiter.cannot_apply_smaller": "Cannot apply crystal: existing crystal is larger or equal",
+  "itemGroup.enchantlimiter": "Enchant Limiter",
+  "enchantlimiter.cannot_apply_blacklist": "Cannot apply crystal: item is blacklisted",
+  "enchantlimiter.crystals_disabled": "Crystals are disabled in the config"
 }

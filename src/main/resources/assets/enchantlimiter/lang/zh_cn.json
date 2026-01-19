@@ -1,5 +1,16 @@
 {
+"item.enchantlimiter.common_crystal": "普通水晶",
+"item.enchantlimiter.uncommon_crystal": "不常见水晶",
+"item.enchantlimiter.rare_crystal": "稀有水晶",
+"item.enchantlimiter.legendary_crystal": "传说水晶",
 "enchantlimiter.points": "付魔点数： %s",
-"enchantlimiter.tip": "付魔点要求： %1$s + %2$s * %3$s = %4$s",
-"enchantlimiter.shift": "按SHIFT查看付魔点要求……"
+"enchantlimiter.tip": "付魔点要求： base %s + incr %s × 等级 %s = %s",
+"enchantlimiter.shift": "按住 SHIFT 查看详细信息",
+"enchantlimiter.cannot_apply_smaller": "无法应用结晶：已有相同或更大的结晶已装上",
+"item.enchantlimiter.tooltip.common": "将附魔容量增加 +1 点。",
+"item.enchantlimiter.tooltip.uncommon": "将附魔容量增加 +3 点。",
+"item.enchantlimiter.tooltip.rare": "将附魔容量增加 +5 点。",
+"item.enchantlimiter.tooltip.legendary": "将附魔容量增加 +10 点。", "itemGroup.enchantlimiter": "Enchant Limiter",
+"enchantlimiter.cannot_apply_blacklist": "无法应用结晶：该物品被列入黑名单",
+"enchantlimiter.crystals_disabled": "配置中已禁用结晶"
 }
