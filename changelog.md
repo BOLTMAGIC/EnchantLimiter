@@ -1,5 +1,10 @@
 # EnchantLimiter — Changelog
 
+Release: 3.0.3 — 2026-06-04
+## Summary
+- Applying a crystal of equal or lesser value could cause the crystal stack to disappear and the operation to fail silently — fixed.
+- The anvil now displays a rejection tooltip and prevents the operation without consuming the crystal.
+
 Release: 3.0.2 — 2026-01-19
 
 ## Summary

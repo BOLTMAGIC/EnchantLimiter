@@ -44,6 +44,10 @@ public class LimiterConfig {
     public static Set<ResourceLocation> crystalBlacklistItems = new HashSet<>();
     public static Set<String> crystalBlacklistNamespaces = new HashSet<>();
     public static Set<ResourceLocation> crystalBlacklistTags = new HashSet<>();
+    // Tooltip configuration: whether to show only a single numeric value instead of the used/total bar,
+    // and whether positive values should be colored red (otherwise white). Negative values are colored green.
+    public static boolean tooltipOnlyNumber = false;
+    public static boolean tooltipPositiveColorRed = true;
 
     static {
         final Pair<LimiterConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(LimiterConfig::new);
@@ -63,6 +67,9 @@ public class LimiterConfig {
     private final ForgeConfigSpec.DoubleValue rareCrystalValueCfg;
     private final ForgeConfigSpec.DoubleValue legendaryCrystalValueCfg;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _crystalBlacklist;
+    // Tooltip config entries
+    private final ForgeConfigSpec.BooleanValue tooltipOnlyNumberCfg;
+    private final ForgeConfigSpec.BooleanValue tooltipPositiveColorRedCfg;
 
     public LimiterConfig(ForgeConfigSpec.Builder b) {
         b.push("enchantability");
@@ -89,6 +96,12 @@ public class LimiterConfig {
         rareCrystalValueCfg = b.comment("Value for rare crystal. Default: 5").defineInRange("rare_crystal_value", 5.0, 0.0, Double.MAX_VALUE);
         legendaryCrystalValueCfg = b.comment("Value for legendary crystal. Default: 10").defineInRange("legendary_crystal_value", 10.0, 0.0, Double.MAX_VALUE);
         _crystalBlacklist = b.comment("Blacklist for crystals. Entries can be exact item (modid:item), tag (tag:namespace:path), or wildcard namespace (modid:*). Examples: [\"minecraft:diamond_sword\", \"YOUR_MOD_ID:custom_item\"]").defineList("crystal blacklist", Collections.emptyList(), String.class::isInstance);
+        b.pop();
+
+        // Tooltip options
+        b.push("tooltip");
+        tooltipOnlyNumberCfg = b.comment("Show only a single numeric amount in the tooltip instead of used/total. If true, enchanted items/books show the consumed points and non-enchanted items show the total. Default: true").define("show_only_number", true);
+        tooltipPositiveColorRedCfg = b.comment("When true, positive point values are colored red; otherwise they are white. Negative values are colored green. Default: true").define("positive_color_red", true);
         b.pop();
         b.build();
     }
@@ -187,6 +200,10 @@ public class LimiterConfig {
                         EnchantLimiter.LOGGER.warn("Invalid crystal blacklist entry: {}", entry);
                     }
                 }
+
+                // Tooltip runtime options
+                tooltipOnlyNumber = CONFIG.tooltipOnlyNumberCfg.get();
+                tooltipPositiveColorRed = CONFIG.tooltipPositiveColorRedCfg.get();
 
                 EnchantLimiter.LOGGER.debug("enchantment limits loaded!");
             } catch (Exception validationException) {

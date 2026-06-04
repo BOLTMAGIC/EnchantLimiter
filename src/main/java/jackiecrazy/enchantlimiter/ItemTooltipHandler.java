@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = EnchantLimiter.MODID, value = Dist.CLIENT)
 public class ItemTooltipHandler {
     // Adds enchantment point information to item tooltips when appropriate.
@@ -48,25 +49,38 @@ public class ItemTooltipHandler {
 
         boolean isEnchanted = stack.isEnchanted() || stack.getItem() instanceof EnchantedBookItem;
         // Show only for swords, tiered tools (pick/axe/shovel/hoe/etc.), armor, shields, bows, crossbows, tridents or items with the crystal tag or already enchanted
-        boolean isSword = stack.getItem() instanceof net.minecraft.world.item.SwordItem;
-        boolean isTieredTool = stack.getItem() instanceof net.minecraft.world.item.TieredItem;
-        boolean isArmor = stack.getItem() instanceof net.minecraft.world.item.ArmorItem;
-        boolean isShield = stack.getItem() instanceof net.minecraft.world.item.ShieldItem;
-        boolean isBow = stack.getItem() instanceof net.minecraft.world.item.BowItem;
-        boolean isCrossbow = stack.getItem() instanceof net.minecraft.world.item.CrossbowItem;
-        boolean isTrident = stack.getItem() instanceof net.minecraft.world.item.TridentItem;
-
-        boolean shouldShowPoints = hasExtraTag || isEnchanted || isSword || isTieredTool || isArmor || isShield || isBow || isCrossbow || isTrident;
+        boolean shouldShowPoints = isShouldShowPoints(stack, hasExtraTag, isEnchanted);
 
         // Always show enchantment points for allowed items
         if (shouldShowPoints) {
-            double used = EnchantLimiter.getUsedEnchantPoints(stack);
+            double displayVal = EnchantLimiter.getUsedEnchantPoints(stack);
             double total = EnchantLimiter.getTotalEnchantPoints(stack);
             MutableComponent amountComp;
-            if (isEnchanted || stack.getItem() instanceof EnchantedBookItem) {
-                amountComp = Component.literal(formatDouble(used) + "/" + formatDouble(total)).withStyle(used > total ? ChatFormatting.RED : ChatFormatting.RESET);
+            // If configured to only show a single numeric amount, show the consumed points for enchanted items/books
+            // and the total for non-enchanted items. Color positive values red/white and negative values green.
+            if (LimiterConfig.tooltipOnlyNumber) {
+                // Only apply the single-number style for enchanted books
+                boolean isBook = stack.getItem() instanceof EnchantedBookItem;
+                if (isBook) {
+                    String s = (displayVal > 0) ? ("+" + formatDouble(displayVal)) : formatDouble(displayVal);
+
+                    ChatFormatting color = (displayVal > 0) ? (LimiterConfig.tooltipPositiveColorRed ? ChatFormatting.RED : ChatFormatting.WHITE) : (displayVal < 0 ? ChatFormatting.GREEN : ChatFormatting.RESET);
+
+                    amountComp = Component.literal(s).withStyle(color);
+                } else {
+                    // Not a book or the mode is not limited to books: fall back to previous behavior
+                    if (isEnchanted || stack.getItem() instanceof EnchantedBookItem) {
+                        amountComp = Component.literal(formatDouble(displayVal) + "/" + formatDouble(total)).withStyle(displayVal > total ? ChatFormatting.RED : ChatFormatting.RESET);
+                    } else {
+                        amountComp = Component.literal(formatDouble(total));
+                    }
+                }
             } else {
-                amountComp = Component.literal(formatDouble(total));
+                if (isEnchanted || stack.getItem() instanceof EnchantedBookItem) {
+                    amountComp = Component.literal(formatDouble(displayVal) + "/" + formatDouble(total)).withStyle(displayVal > total ? ChatFormatting.RED : ChatFormatting.RESET);
+                } else {
+                    amountComp = Component.literal(formatDouble(total));
+                }
             }
             e.getToolTip().add(Component.translatable("enchantlimiter.points", amountComp));
         }
@@ -88,6 +102,18 @@ public class ItemTooltipHandler {
                 insertDescriptionTooltips(e.getToolTip(), stack);
             else e.getToolTip().add(Component.translatable("enchantlimiter.shift"));
         }
+    }
+
+    private static boolean isShouldShowPoints(ItemStack stack, boolean hasExtraTag, boolean isEnchanted) {
+        boolean isSword = stack.getItem() instanceof net.minecraft.world.item.SwordItem;
+        boolean isTieredTool = stack.getItem() instanceof net.minecraft.world.item.TieredItem;
+        boolean isArmor = stack.getItem() instanceof net.minecraft.world.item.ArmorItem;
+        boolean isShield = stack.getItem() instanceof net.minecraft.world.item.ShieldItem;
+        boolean isBow = stack.getItem() instanceof net.minecraft.world.item.BowItem;
+        boolean isCrossbow = stack.getItem() instanceof net.minecraft.world.item.CrossbowItem;
+        boolean isTrident = stack.getItem() instanceof net.minecraft.world.item.TridentItem;
+
+        return hasExtraTag || isEnchanted || isSword || isTieredTool || isArmor || isShield || isBow || isCrossbow || isTrident;
     }
 
     private static String formatDouble(double d) {

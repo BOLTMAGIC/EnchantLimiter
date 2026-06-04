@@ -50,13 +50,17 @@ public class AnvilCrystalHandler {
 
         // Check if crystals are enabled
         if (!LimiterConfig.areCrystalsEnabled()) {
+            // Show a preview with rejection reason but make the anvil operation impossible
+            // by setting an extremely high level and material cost. This prevents the
+            // player from taking the output (and thus prevents any crystal from being consumed),
+            // while still allowing the UI to display the rejection tooltip.
             ItemStack preview = targetStack.copy();
             CompoundTag t = preview.getOrCreateTag();
             t.putString("el_crystal_reject", "enchantlimiter.crystals_disabled");
             preview.setTag(t);
             e.setOutput(preview);
-            e.setCost(0);
-            e.setMaterialCost(0);
+            e.setCost(100000); // prohibitively high cost
+            e.setMaterialCost(64000); // require more materials than a normal stack
             return;
         }
 
@@ -82,13 +86,14 @@ public class AnvilCrystalHandler {
         }
 
         if (targetBlacklisted) {
+            // As above, show rejection in the preview but make the operation impossible
             ItemStack preview = targetStack.copy();
             CompoundTag t = preview.getOrCreateTag();
             t.putString("el_crystal_reject", "enchantlimiter.cannot_apply_blacklist");
             preview.setTag(t);
             e.setOutput(preview);
-            e.setCost(0);
-            e.setMaterialCost(0);
+            e.setCost(100000);
+            e.setMaterialCost(64000);
             return;
         }
 
@@ -101,13 +106,16 @@ public class AnvilCrystalHandler {
             double existing = existingTag.getDouble("extraEnchantPoints");
             // If trying to apply a crystal that is less-than-or-equal to existing, show rejection tooltip in preview
             if (crystalValue <= existing) {
+                // Show the cannot-apply message but make the anvil operation impossible so
+                // crystals are not consumed when the player attempts to apply an equal or
+                // smaller crystal.
                 ItemStack preview = targetStack.copy();
                 CompoundTag t = preview.getOrCreateTag();
                 t.putString("el_crystal_reject", "enchantlimiter.cannot_apply_smaller");
                 preview.setTag(t);
                 e.setOutput(preview);
-                e.setCost(0);
-                e.setMaterialCost(0);
+                e.setCost(100000);
+                e.setMaterialCost(64000);
                 return;
             }
             // crystalValue > existing: allow replacing existing with larger crystal

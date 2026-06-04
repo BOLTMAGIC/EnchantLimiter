@@ -19,6 +19,8 @@ public class EnchantLimiter {
 
     public EnchantLimiter() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, LimiterConfig.CONFIG_SPEC);
+        // Client-side config for tooltip display (so clients can toggle the visual behavior locally)
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, LimiterClientConfig.CONFIG_SPEC);
         // Register items and other registries
         ItemInit.register();
         ModCreativeTabs.register();
