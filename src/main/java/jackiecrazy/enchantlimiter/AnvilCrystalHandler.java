@@ -24,7 +24,7 @@ public class AnvilCrystalHandler {
     //   application.
     @SubscribeEvent
     public static void onAnvilUpdate(AnvilUpdateEvent e) {
-        if (LimiterConfig.isModEnabled()) return;
+        if (!LimiterConfig.isModEnabled()) return;
 
         ItemStack left = e.getLeft();
         ItemStack right = e.getRight();

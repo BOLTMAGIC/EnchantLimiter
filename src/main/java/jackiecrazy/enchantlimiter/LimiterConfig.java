@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,6 +23,7 @@ public class LimiterConfig {
     //that is, subtract damage by (d>40/(t+1))(d-40/(t+1))/2
     public static final LimiterConfig CONFIG;
     public static final ForgeConfigSpec CONFIG_SPEC;
+    private static ModConfig serverConfig;
     public static HashMap<Enchantment, EnchantInfo> map = new HashMap<>();
     public static HashMap<Item, EnchantInfo> customItems = new HashMap<>();
     public static List<Enchantment> blacklistedEnchantments = new ArrayList<>();
@@ -116,6 +118,10 @@ public class LimiterConfig {
     public static void loadConfig(ModConfigEvent e) {
         if (e.getConfig().getSpec() == CONFIG_SPEC) {
             try {
+                if (e.getConfig().getType() == ModConfig.Type.SERVER) {
+                    serverConfig = e.getConfig();
+                }
+
                 // Create the config file only if it does not exist. This prevents overwriting existing files.
                 java.nio.file.Path configFile = FMLPaths.CONFIGDIR.get().resolve(EnchantLimiter.MODID + "-server.toml");
                 if (!Files.exists(configFile)) {
@@ -278,6 +284,18 @@ public class LimiterConfig {
     }
 
     public static boolean isModEnabled() {
-        return !modEnabled;
+        return modEnabled;
+    }
+
+    public static void setModEnabled(boolean enabled) {
+        modEnabled = enabled;
+        CONFIG.modEnabledCfg.set(enabled);
+        if (serverConfig != null) {
+            try {
+                serverConfig.save();
+            } catch (Exception ex) {
+                EnchantLimiter.LOGGER.warn("Failed to persist mod enabled state: {}", ex.getMessage());
+            }
+        }
     }
 }

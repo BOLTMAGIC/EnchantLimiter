@@ -20,7 +20,7 @@ public class AnvilEnchantHandler {
     //   fall back to greedily reducing any enchantments in the result until it fits.
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onAnvilUpdate(AnvilUpdateEvent e) {
-        if (LimiterConfig.isModEnabled()) return;
+        if (!LimiterConfig.isModEnabled()) return;
 
         ItemStack left = e.getLeft();
         ItemStack output = e.getOutput();
