@@ -25,6 +25,7 @@ public class LimiterConfig {
     public static HashMap<Enchantment, EnchantInfo> map = new HashMap<>();
     public static HashMap<Item, EnchantInfo> customItems = new HashMap<>();
     public static List<Enchantment> blacklistedEnchantments = new ArrayList<>();
+    public static boolean modEnabled = true;
     public static EnchantInfo DEFAULT = new EnchantInfo(0, 1);
     public static double pointsPerEnchantability, grain;
     public static double basePoint;
@@ -58,6 +59,7 @@ public class LimiterConfig {
     private final ForgeConfigSpec.DoubleValue ppe;
     private final ForgeConfigSpec.DoubleValue granularity;
     private final ForgeConfigSpec.DoubleValue basePoints, baseCost, incrementalCost;
+    private final ForgeConfigSpec.BooleanValue modEnabledCfg;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _customItems;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _enchantDefinition;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _blacklistedEnchantments;
@@ -72,6 +74,10 @@ public class LimiterConfig {
     private final ForgeConfigSpec.BooleanValue tooltipPositiveColorRedCfg;
 
     public LimiterConfig(ForgeConfigSpec.Builder b) {
+        b.push("general");
+        modEnabledCfg = b.comment("Enable or disable all EnchantLimiter features globally. Default: true").define("enabled", true);
+        b.pop();
+
         b.push("enchantability");
         ppe = b.comment("how much each point of enchantability in the item will add to its enchantment point pool. Default: 0.5").defineInRange("points per enchantability", 0.5, 0d, Double.MAX_VALUE);
         granularity = b.comment("if the number of enchantment points falls within this distance to a whole number, it will be rounded to the whole number instead. This allows you to have clean 1/3 or 1/7 for the incremental cost of enchantments.").defineInRange("granularity", 0.1, 0d, 1);
@@ -124,6 +130,7 @@ public class LimiterConfig {
                 map.clear();
                 customItems.clear();
                 blacklistedEnchantments.clear();
+                modEnabled = CONFIG.modEnabledCfg.get();
                 pointsPerEnchantability = CONFIG.ppe.get();
                 basePoint = CONFIG.basePoints.get();
                 grain = CONFIG.granularity.get();
@@ -268,5 +275,9 @@ public class LimiterConfig {
     // or applying crystal logic.
     public static boolean areCrystalsEnabled() {
         return crystalsEnabled;
+    }
+
+    public static boolean isModEnabled() {
+        return !modEnabled;
     }
 }

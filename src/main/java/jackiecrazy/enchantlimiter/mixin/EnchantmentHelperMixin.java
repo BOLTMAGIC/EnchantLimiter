@@ -24,6 +24,25 @@ public abstract class EnchantmentHelperMixin {
      */
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
+        if (LimiterConfig.isModEnabled()) {
+            ListTag vanillaList = new ListTag();
+            for (Map.Entry<Enchantment, Integer> entry : enchMap.entrySet()) {
+                Enchantment enchantment = entry.getKey();
+                if (enchantment == null) continue;
+                int level = entry.getValue();
+                vanillaList.add(EnchantmentHelper.storeEnchantment(EnchantmentHelper.getEnchantmentId(enchantment), level));
+                if (stack.getItem() instanceof EnchantedBookItem) {
+                    EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(enchantment, level));
+                }
+            }
+            if (vanillaList.isEmpty()) {
+                stack.removeTagKey("Enchantments");
+            } else if (stack.getItem() != Items.ENCHANTED_BOOK) {
+                stack.addTagElement("Enchantments", vanillaList);
+            }
+            return;
+        }
+
         Map<Enchantment, Integer> filteredMap = new HashMap<>(enchMap);
         if (stack.getItem() instanceof EnchantedBookItem) {
             filteredMap.keySet().removeIf(LimiterConfig.blacklistedEnchantments::contains);

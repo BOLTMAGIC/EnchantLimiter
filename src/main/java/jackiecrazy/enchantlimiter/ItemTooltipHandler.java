@@ -31,6 +31,8 @@ public class ItemTooltipHandler {
     // - If an item is blacklisted for crystals, a blacklist message is shown instead.
     @SubscribeEvent(priority = EventPriority.HIGH)//by marking it high, this will appear AFTER ench desc
     public static void tooltip(ItemTooltipEvent e) {
+        if (LimiterConfig.isModEnabled()) return;
+
         ItemStack stack = e.getItemStack();
 
         String rejectKey = null;
