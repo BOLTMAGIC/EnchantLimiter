@@ -24,7 +24,8 @@ public abstract class EnchantmentHelperMixin {
      */
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
-        if (LimiterConfig.isModEnabled()) {
+        // If the mod is disabled, fall back to vanilla behavior and return early.
+        if (!LimiterConfig.isModEnabled()) {
             ListTag vanillaList = new ListTag();
             for (Map.Entry<Enchantment, Integer> entry : enchMap.entrySet()) {
                 Enchantment enchantment = entry.getKey();

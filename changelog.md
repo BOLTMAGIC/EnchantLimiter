@@ -1,5 +1,9 @@
 # EnchantLimiter — Changelog
 
+Release: 3.0.6 — 2026-07-31
+## Summary
+- Fixed EnchantLimiter not working
+
 Release: 3.0.5 — 2026-07-29
 ## Summary
 - Changed Tooltip handling to use the points from the config instead of the hardcoded values in the item class.
