@@ -18,10 +18,6 @@ import java.util.Map;
 @Mixin(EnchantmentHelper.class)
 public abstract class EnchantmentHelperMixin {
 
-    /**
-     * @author Jackiecrazy
-     * @reason yes
-     */
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
         // If the mod is disabled, fall back to vanilla behavior and return early.
@@ -72,10 +68,10 @@ public abstract class EnchantmentHelperMixin {
                 int i = entry.getValue();
                 //negatives have already been iterated
                 if (EnchantLimiter.getRequiredEnchantPoints(enchantment, i) < 0) continue;
-                while (i >= 1) {
-                    if (accumulated + EnchantLimiter.getRequiredEnchantPoints(enchantment, i) > max) {
-                        i--;
-                    } else break;
+                double enchantCost = EnchantLimiter.getRequiredEnchantPoints(enchantment, i);
+                // Try to fit this enchantment at the requested level, or lower
+                while (i >= 1 && accumulated + EnchantLimiter.getRequiredEnchantPoints(enchantment, i) > max) {
+                    i--;
                 }
                 if (i <= 0) continue;
                 listnbt.add(EnchantmentHelper.storeEnchantment(EnchantmentHelper.getEnchantmentId(enchantment), i));

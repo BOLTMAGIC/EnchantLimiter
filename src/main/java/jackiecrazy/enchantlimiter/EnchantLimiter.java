@@ -33,10 +33,9 @@ public class EnchantLimiter {
     //   the crystal-sourced value. This field is not cumulative across multiple crystals; the
     //   Anvil handler will ensure only the highest crystal value is stored here.
     public static double getTotalEnchantPoints(ItemStack stack) {
-        double ret=(stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
-        ret=(stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
+        double ret = (stack.getEnchantmentValue() * LimiterConfig.pointsPerEnchantability) + LimiterConfig.basePoint;
         if (LimiterConfig.customItems.containsKey(stack.getItem())) {
-             ret = LimiterConfig.customItems.get(stack.getItem()).getBase();
+            ret = LimiterConfig.customItems.get(stack.getItem()).getBase();
             ret += (stack.getEnchantmentValue() * LimiterConfig.customItems.get(stack.getItem()).getIncrement());
         }
         if(stack.hasTag()) {
@@ -55,7 +54,10 @@ public class EnchantLimiter {
     }
 
     public static double getRequiredEnchantPoints(Enchantment e, int i) {
-        LimiterConfig.EnchantInfo ei=LimiterConfig.map.getOrDefault(e, LimiterConfig.DEFAULT);
+        // Level 0 or below means no enchantment, so 0 points required
+        if (i <= 0) return 0;
+
+        LimiterConfig.EnchantInfo ei = LimiterConfig.map.getOrDefault(e, LimiterConfig.DEFAULT);
         return ei.getBase() + (ei.getIncrement() * i);
     }
 }
