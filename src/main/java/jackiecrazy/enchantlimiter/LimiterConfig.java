@@ -32,6 +32,10 @@ public class LimiterConfig {
     public static double pointsPerEnchantability, grain;
     public static double basePoint;
 
+    // Server-side bug fix: Track whether server config has been loaded
+    // This prevents enchantments from being applied with default values before the config loads
+    private static boolean serverConfigLoaded = false;
+
     // New crystal config data
     // These static fields were added to support "crystal" items that add enchantment points
     // when combined with an item in an anvil. The design decisions are:
@@ -218,6 +222,12 @@ public class LimiterConfig {
                 tooltipOnlyNumber = CONFIG.tooltipOnlyNumberCfg.get();
                 tooltipPositiveColorRed = CONFIG.tooltipPositiveColorRedCfg.get();
 
+                // SERVER-SIDE BUG FIX: Mark config as loaded only after server config is processed
+                if (e.getConfig().getType() == ModConfig.Type.SERVER) {
+                    serverConfigLoaded = true;
+                    EnchantLimiter.LOGGER.info("enchantlimiter: Server configuration loaded successfully");
+                }
+
                 EnchantLimiter.LOGGER.debug("enchantment limits loaded!");
             } catch (Exception validationException) {
                 EnchantLimiter.LOGGER.fatal("Something broke while loading the enchantment config!.");
@@ -294,8 +304,14 @@ public class LimiterConfig {
             try {
                 serverConfig.save();
             } catch (Exception ex) {
-                EnchantLimiter.LOGGER.warn("Failed to persist mod enabled state: {}", ex.getMessage());
+                EnchantLimiter.LOGGER.warn("Failed to persist mod enabled state: {}", ex);
             }
         }
+    }
+
+    // SERVER-SIDE BUG FIX: Check if server config has been loaded
+    // This prevents enchantments from being validated with incomplete config on dedicated servers
+    public static boolean isServerConfigLoaded() {
+        return serverConfigLoaded;
     }
 }

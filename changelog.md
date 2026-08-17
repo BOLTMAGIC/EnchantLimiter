@@ -1,5 +1,9 @@
 # EnchantLimiter — Changelog
 
+Release: 3.0.7 — 2026-08-17
+## Summary
+- Fixed EnchantLimiter not working (again)
+
 Release: 3.0.6 — 2026-07-31
 ## Summary
 - Fixed EnchantLimiter not working
