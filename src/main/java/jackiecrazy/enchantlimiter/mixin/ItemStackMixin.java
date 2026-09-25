@@ -2,6 +2,7 @@ package jackiecrazy.enchantlimiter.mixin;
 
 import jackiecrazy.enchantlimiter.EnchantLimiter;
 import jackiecrazy.enchantlimiter.LimiterConfig;
+import jackiecrazy.enchantlimiter.exempt.Exemptions;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,8 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ItemStackMixin {
     @Inject(method = "enchant", at = @At("HEAD"), cancellable = true)
     private void validateEnchant(Enchantment ench, int level, CallbackInfo ci) {
-        // Only validate if mod is enabled and level is positive
-        if (!LimiterConfig.isModEnabled() || level <= 0) {
+        // Only validate if the limit applies to the acting player and level is positive
+        if (!Exemptions.isLimitActive() || level <= 0) {
             return;
         }
 

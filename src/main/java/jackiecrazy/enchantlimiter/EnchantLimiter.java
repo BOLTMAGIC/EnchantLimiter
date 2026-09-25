@@ -1,5 +1,6 @@
 package jackiecrazy.enchantlimiter;
 
+import jackiecrazy.enchantlimiter.network.LimiterNetwork;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -24,6 +25,7 @@ public class EnchantLimiter {
         // Register items and other registries
         ItemInit.register();
         ModCreativeTabs.register();
+        LimiterNetwork.register();
     }
 
     // Compute total enchant points for display/limits.

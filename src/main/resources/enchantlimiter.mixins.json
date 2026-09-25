@@ -6,10 +6,12 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ItemStackMixin",
-    "EnchantmentHelperMixin"
+    "EnchantmentHelperMixin",
+    "AnvilMenuMixin",
+    "ServerGamePacketListenerMixin",
+    "compat.EnchLibraryContainerMixin"
   ],
-  "client": [
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

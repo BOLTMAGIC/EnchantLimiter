@@ -1,5 +1,6 @@
 package jackiecrazy.enchantlimiter;
 
+import jackiecrazy.enchantlimiter.exempt.Exemptions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -53,8 +54,10 @@ public class ItemTooltipHandler {
         // Show only for swords, tiered tools (pick/axe/shovel/hoe/etc.), armor, shields, bows, crossbows, tridents or items with the crystal tag or already enchanted
         boolean shouldShowPoints = isShouldShowPoints(stack, hasExtraTag, isEnchanted);
 
-        // Always show enchantment points for allowed items
-        if (shouldShowPoints) {
+        // Exempt players have no cap: say so instead of showing points
+        if (shouldShowPoints && Exemptions.clientExempt) {
+            e.getToolTip().add(Component.translatable("enchantlimiter.points_unlimited").withStyle(ChatFormatting.GREEN));
+        } else if (shouldShowPoints) {
             double displayVal = EnchantLimiter.getUsedEnchantPoints(stack);
             double total = EnchantLimiter.getTotalEnchantPoints(stack);
             MutableComponent amountComp;

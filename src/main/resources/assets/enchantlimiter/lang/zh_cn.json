@@ -12,5 +12,6 @@
 "item.enchantlimiter.tooltip.rare": "将附魔容量增加 +5 点。",
 "item.enchantlimiter.tooltip.legendary": "将附魔容量增加 +10 点。", "itemGroup.enchantlimiter": "Enchant Limiter",
 "enchantlimiter.cannot_apply_blacklist": "无法应用结晶：该物品被列入黑名单",
-"enchantlimiter.crystals_disabled": "配置中已禁用结晶"
+"enchantlimiter.crystals_disabled": "配置中已禁用结晶",
+  "enchantlimiter.points_unlimited": "附魔点数：无限制"
 }

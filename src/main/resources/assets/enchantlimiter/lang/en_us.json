@@ -13,5 +13,6 @@
   "enchantlimiter.cannot_apply_smaller": "Cannot apply crystal: existing crystal is larger or equal",
   "itemGroup.enchantlimiter": "Enchant Limiter",
   "enchantlimiter.cannot_apply_blacklist": "Cannot apply crystal: item is blacklisted",
-  "enchantlimiter.crystals_disabled": "Crystals are disabled in the config"
+  "enchantlimiter.crystals_disabled": "Crystals are disabled in the config",
+  "enchantlimiter.points_unlimited": "Enchant Points: No limit"
 }

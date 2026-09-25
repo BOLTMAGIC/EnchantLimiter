@@ -2,6 +2,7 @@ package jackiecrazy.enchantlimiter.mixin;
 
 import jackiecrazy.enchantlimiter.EnchantLimiter;
 import jackiecrazy.enchantlimiter.LimiterConfig;
+import jackiecrazy.enchantlimiter.exempt.Exemptions;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -20,8 +21,8 @@ public abstract class EnchantmentHelperMixin {
 
     @Overwrite()
     public static void setEnchantments(Map<Enchantment, Integer> enchMap, ItemStack stack) {
-        // If the mod is disabled, fall back to vanilla behavior and return early.
-        if (!LimiterConfig.isModEnabled()) {
+        // If the mod is disabled or the acting player is exempt, fall back to vanilla behavior.
+        if (!Exemptions.isLimitActive()) {
             ListTag vanillaList = new ListTag();
             for (Map.Entry<Enchantment, Integer> entry : enchMap.entrySet()) {
                 Enchantment enchantment = entry.getKey();

@@ -25,3 +25,9 @@ Limits the amount of enchantments that can go on a single item, based on its enc
     versionRange="[1.20.1,1.20.2)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.enchantlimiter]]
+    modId="ftbteams"
+    mandatory=false
+    versionRange="[2001.3,)"
+    ordering="AFTER"
+    side="SERVER"

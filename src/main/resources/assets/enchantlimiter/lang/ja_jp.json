@@ -13,5 +13,6 @@
   "item.enchantlimiter.tooltip.legendary": "付与可能ポイントを +10 増やします。",
   "itemGroup.enchantlimiter": "Enchant Limiter",
   "enchantlimiter.cannot_apply_blacklist": "結晶を適用できません：このアイテムはブラックリストに登録されています",
-  "enchantlimiter.crystals_disabled": "設定で結晶が無効化されています"
+  "enchantlimiter.crystals_disabled": "設定で結晶が無効化されています",
+  "enchantlimiter.points_unlimited": "エンチャントポイント: 無制限"
 }

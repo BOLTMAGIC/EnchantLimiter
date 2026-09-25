@@ -28,6 +28,8 @@ public class LimiterConfig {
     public static HashMap<Item, EnchantInfo> customItems = new HashMap<>();
     public static List<Enchantment> blacklistedEnchantments = new ArrayList<>();
     public static boolean modEnabled = true;
+    // Advancements that permanently exempt the player (and their FTB team) from the limit
+    public static Set<ResourceLocation> exemptAdvancements = new HashSet<>();
     public static EnchantInfo DEFAULT = new EnchantInfo(0, 1);
     public static double pointsPerEnchantability, grain;
     public static double basePoint;
@@ -66,6 +68,7 @@ public class LimiterConfig {
     private final ForgeConfigSpec.DoubleValue granularity;
     private final ForgeConfigSpec.DoubleValue basePoints, baseCost, incrementalCost;
     private final ForgeConfigSpec.BooleanValue modEnabledCfg;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> _exemptAdvancements;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _customItems;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _enchantDefinition;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _blacklistedEnchantments;
@@ -82,6 +85,7 @@ public class LimiterConfig {
     public LimiterConfig(ForgeConfigSpec.Builder b) {
         b.push("general");
         modEnabledCfg = b.comment("Enable or disable all EnchantLimiter features globally. Default: true").define("enabled", true);
+        _exemptAdvancements = b.comment("Advancements that exempt a player from the enchantment limit once earned. With FTB Teams installed, the player's whole party is exempt too. Players can also be exempted with /enchantlimiter exempt. Examples: [\"mypack:obtained_infinity_ingot\"]").defineList("exempt advancements", Collections.emptyList(), String.class::isInstance);
         b.pop();
 
         b.push("enchantability");
@@ -141,6 +145,12 @@ public class LimiterConfig {
                 customItems.clear();
                 blacklistedEnchantments.clear();
                 modEnabled = CONFIG.modEnabledCfg.get();
+                exemptAdvancements.clear();
+                for (String s : CONFIG._exemptAdvancements.get()) {
+                    ResourceLocation id = ResourceLocation.tryParse(s.trim());
+                    if (id != null) exemptAdvancements.add(id);
+                    else EnchantLimiter.LOGGER.warn("Invalid exempt advancement id: {}", s);
+                }
                 pointsPerEnchantability = CONFIG.ppe.get();
                 basePoint = CONFIG.basePoints.get();
                 grain = CONFIG.granularity.get();

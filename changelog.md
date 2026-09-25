@@ -1,5 +1,24 @@
 # EnchantLimiter — Changelog
 
+Unreleased — per-player exemption
+## Summary
+- The limit can now be lifted for individual players instead of the whole server.
+
+## Added
+- Per-player exemption, stored per world (`data/enchantlimiter_exemptions.dat`), not in the config.
+- Config `general.exempt advancements`: earning any listed advancement exempts the player
+  (also applied on login for advancements earned earlier).
+- Command `/enchantlimiter exempt <players> [true|false]` (op level 2, works for offline players).
+- Optional FTB Teams support: if anyone in a player's party is exempt, the whole party is.
+  Checked live, so joining an exempt party grants it and leaving revokes it.
+- Exempt players see "Enchant Points: No limit" in tooltips; anvil previews match the server.
+
+## How it works
+- The limit is only lifted for operations a player performs: enchanting via any table that uses the
+  vanilla menu-button packet (vanilla, Apotheosis, Enchanting Infuser, ...), the anvil, and the
+  Apotheosis Library. Loot, villager trades and commands stay limited.
+- `/enchantlimiter enable|disable` still toggles the mod for everyone.
+
 Release: 3.0.7 — 2026-08-17
 ## Summary
 - Fixed EnchantLimiter not working (again)
