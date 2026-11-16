@@ -3,10 +3,11 @@ package jackiecrazy.enchantlimiter.mixin;
 import jackiecrazy.enchantlimiter.EnchantLimiter;
 import jackiecrazy.enchantlimiter.LimiterConfig;
 import jackiecrazy.enchantlimiter.exempt.Exemptions;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,6 +34,12 @@ public abstract class ItemStackMixin {
         }
 
         ItemStack stack = (ItemStack) (Object) this;
+
+        // Skip enchantment limits for exempt mods
+        if (LimiterConfig.isModExempt(stack)) {
+            return;
+        }
+
         double total = EnchantLimiter.getTotalEnchantPoints(stack);
         double used = EnchantLimiter.getUsedEnchantPoints(stack);
         double available = total - used;

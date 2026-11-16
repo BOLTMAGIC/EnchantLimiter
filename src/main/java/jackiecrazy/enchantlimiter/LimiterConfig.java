@@ -30,6 +30,7 @@ public class LimiterConfig {
     public static boolean modEnabled = true;
     // Advancements that permanently exempt the player (and their FTB team) from the limit
     public static Set<ResourceLocation> exemptAdvancements = new HashSet<>();
+    public static Set<String> exemptedMods = new HashSet<>();
     public static EnchantInfo DEFAULT = new EnchantInfo(0, 1);
     public static double pointsPerEnchantability, grain;
     public static double basePoint;
@@ -72,6 +73,7 @@ public class LimiterConfig {
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _customItems;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _enchantDefinition;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> _blacklistedEnchantments;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> _exemptedMods;
     private final ForgeConfigSpec.BooleanValue crystalsEnabledCfg;
     private final ForgeConfigSpec.DoubleValue commonCrystalValueCfg;
     private final ForgeConfigSpec.DoubleValue uncommonCrystalValueCfg;
@@ -86,6 +88,7 @@ public class LimiterConfig {
         b.push("general");
         modEnabledCfg = b.comment("Enable or disable all EnchantLimiter features globally. Default: true").define("enabled", true);
         _exemptAdvancements = b.comment("Advancements that exempt a player from the enchantment limit once earned. With FTB Teams installed, the player's whole party is exempt too. Players can also be exempted with /enchantlimiter exempt. Examples: [\"mypack:obtained_infinity_ingot\"]").defineList("exempt advancements", Collections.emptyList(), String.class::isInstance);
+        _exemptedMods = b.comment("Mods whose items are exempt from enchantment limits. Format: modid").defineList("exempted mods", Collections.singletonList("mob_grinding_utils"), String.class::isInstance);
         b.pop();
 
         b.push("enchantability");
@@ -150,6 +153,10 @@ public class LimiterConfig {
                     ResourceLocation id = ResourceLocation.tryParse(s.trim());
                     if (id != null) exemptAdvancements.add(id);
                     else EnchantLimiter.LOGGER.warn("Invalid exempt advancement id: {}", s);
+                }
+                exemptedMods.clear();
+                for (String modid : CONFIG._exemptedMods.get()) {
+                    exemptedMods.add(modid.trim());
                 }
                 pointsPerEnchantability = CONFIG.ppe.get();
                 basePoint = CONFIG.basePoints.get();
@@ -323,5 +330,11 @@ public class LimiterConfig {
     // This prevents enchantments from being validated with incomplete config on dedicated servers
     public static boolean isServerConfigLoaded() {
         return serverConfigLoaded;
+    }
+
+    public static boolean isModExempt(ItemStack stack) {
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+
+        return id != null && exemptedMods.contains(id.getNamespace());
     }
 }
