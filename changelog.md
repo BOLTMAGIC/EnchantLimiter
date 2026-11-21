@@ -1,6 +1,12 @@
 # EnchantLimiter — Changelog
 
-Unreleased — per-player exemption
+Release: 3.1.1 — 2026-11-21
+
+## Summary
+Add config to exempt entire mods from the limit (Thx to MiniMaxi!)
+
+Release: 3.0.10 — 2026-09-25
+
 ## Summary
 - The limit can now be lifted for individual players instead of the whole server.
 
